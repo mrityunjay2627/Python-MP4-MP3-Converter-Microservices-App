@@ -1,5 +1,3 @@
---- Command to run using terminal: mysql -uroot -e "source C:/Users/mrity/Documents/Personal_Code/DevOps/Python-MP4-MP3-Converter-Microservices-App/python/src/auth/init.sql" -p
-
 CREATE USER 'auth_user'@'localhost' IDENTIFIED BY 'Auth123';
 
 CREATE DATABASE auth;
