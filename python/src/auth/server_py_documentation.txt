@@ -1,0 +1,70 @@
+-- init.sql ---
+To run init.sql in CMD:
+
+''' 
+Command to run using terminal: mysql -uroot -e "source C:/Users/mrity/Documents/Personal_Code/DevOps/Python-MP4-MP3-Converter-Microservices-App/python/src/auth/init.sql" -p
+'''
+
+
+* Citation 1
+--- Auth and JWT --- # Timestamp 31:00 - 38:00
+Step 1: Understanding the Overall Architecture
+Imagine your microservices running within a private Kubernetes cluster. This cluster’s internal network is shielded from the open internet. Meanwhile, your client (a user or external service) operates outside the cluster. Because the client cannot directly access any internal services, all its requests must enter through a single entry point known as the Gateway service. The Gateway, in turn, communicates with the appropriate internal services to fulfill whatever task the client wants (e.g., uploading a file or retrieving data).
+
+Step 2: Role of the Auth Service
+Since the cluster’s internal network is private, you need a way to decide who is allowed to pass through the Gateway and into the system. That is where the Auth service comes in. It maintains a database of authorized user credentials—specifically usernames and passwords. When a client tries to log in, the Auth service checks those credentials against its database to determine if the user is valid.
+
+Step 3: Basic Authentication
+Basic authentication requires that the client present a username and password within the request header. The credentials are base64-encoded and placed in an Authorization: Basic <encoded_credentials> header. When the user first attempts to log in, the Auth service decodes these credentials, compares them against the database, and decides whether the user can proceed. If the username and password match an existing record, the Auth service issues the user a JSON Web Token (JWT).
+
+Step 4: Introducing the JWT
+A JSON Web Token (JWT) is essentially three pieces of information—header, payload, and signature—joined together by periods and each base64-encoded. The header specifies details like the signing algorithm (e.g., HS256), while the payload contains “claims,” or information about the user (such as username and permissions). Finally, the signature is produced by taking the header, payload, and a private key, then signing them using the chosen algorithm. This signature ensures that the token has not been changed and comes from a trusted source.
+
+Step 5: Why Signing Matters
+The Auth service is the only part of the system that holds the private key to sign JWTs. Because of this, when the client later sends the JWT in a request, the Auth service can verify that it was not tampered with by checking the token’s signature against the private key. This prevents an attacker from simply modifying the claims to gain higher privileges, such as making themselves an admin.
+
+Step 6: Using the JWT in Subsequent Requests
+Once the Auth service returns the JWT, the client includes it in future requests to the Gateway—usually with an Authorization: Bearer <jwt> header. Upon receiving a request, the Gateway consults the Auth service to verify the token’s authenticity and parse the user’s permissions from the payload. If the token is valid and not expired, the user can access protected endpoints; if not, the request is rejected.
+
+Step 7: Bringing It All Together
+The overall flow begins with a user supplying valid credentials via Basic authentication. If the credentials check out, the Auth service responds with a signed JWT. From then on, the user no longer needs to send their username and password. Instead, every request includes the JWT, which carries all the information required for authorization. Thanks to the signature, the system can trust that this information has not been changed and that the request is from a legitimate user. This design ensures both security and scalability when working in distributed systems like Kubernetes.
+
+
+* Citation 2
+--- Login and Auth Flow --- # Timestamp 40:00 - 42:00 
+Step 1: Creating the Login Route
+The first step is to provide a dedicated route for user login. When a user sends a request to this route, they include their credentials (username and password). This route is associated with a function that takes these credentials and checks whether they exist in the system’s database.
+
+Step 2: Verifying User Credentials
+If the username and password match a valid record in the database, the system considers the user “authenticated.” This simple check confirms that the individual attempting to log in is recognized by the system.
+
+Step 3: Issuing the JSON Web Token (JWT)
+Upon successful authentication, the system generates a JWT for the user. This token contains the user’s information and permissions. The user will then include this JWT in future requests to the API, eliminating the need to repeatedly submit their username and password.
+
+Step 4: Managing Permissions (Admin vs. Non-Admin)
+The token also holds data indicating whether the user is an admin. In this simplified approach, an admin user is granted access to all system endpoints. Non-admin users might be restricted in what they can do, depending on how you define their permissions within the token’s payload.
+
+Step 5: Validating JWTs
+Lastly, there must be an endpoint to validate the JWTs that clients present. This involves checking that the token is signed using the same secret that was used to create it. If the signature is valid and the token has not expired, the user gains access to the requested resources; otherwise, the request is denied. This mechanism ensures that only legitimate tokens issued by the system can be used to interact with the API.
+
+
+* Citation 3
+--- Server Run (Host and Port) --- # Timestamp 42:50 - 47:15
+Step 1: Configuring the Server and Host Parameter
+When running a Flask application on port 5000, you must set the host parameter to control which IP addresses your application listens on. By default, Flask uses localhost, which means the server will only be accessible from your own machine. To make the API available externally, you change this configuration—often setting it to 0.0.0.0.
+
+Step 2: Understanding Localhost vs. 0.0.0.0
+Using localhost restricts traffic to the local computer, so external devices cannot connect. When you specify 0.0.0.0, it tells the application to listen on all public IP addresses available to the server. This makes your Flask app reachable from outside the machine or container hosting it.
+
+Step 3: Running Flask in a Docker Container
+Inside a Docker container, your application will receive its own IP address within the Docker network. In practical terms, you can send requests to this container’s IP address, but that alone doesn’t guarantee that Flask will accept them. You must explicitly configure Flask to listen on the container’s IP address by setting the host to 0.0.0.0.
+
+Step 4: The Role of the Host Configuration
+The host parameter essentially points Flask to the network interface on which it should listen for incoming requests. Because a Docker container’s IP address can change (especially if it’s removed and recreated), it’s more reliable to use the wildcard address (0.0.0.0) rather than a static IP. This way, the Flask application will accept traffic from any IP address assigned to the container.
+
+Step 5: Multiple Docker Networks
+If your container belongs to multiple Docker networks, Docker assigns a unique IP address for each network. By specifying 0.0.0.0, the Flask app will listen for requests on all these IPs. Should you ever want to limit access to one network, you could configure a specific IP address in place of 0.0.0.0, but that would make the server inaccessible from other network addresses (including localhost).
+
+
+* Citation 4
+So now that we've finished creating our login route we want to actually make another route to validate JWTs and this route is going to be used by our API Gateway to validate JWTs sync within requests from the client to both upload and receive or download MP3s or to upload videos and download the MP3 version of those videos and you'll see what I mean by that later on in the tutorial when we actually start to implement that 
