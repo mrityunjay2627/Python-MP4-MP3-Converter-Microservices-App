@@ -67,4 +67,33 @@ If your container belongs to multiple Docker networks, Docker assigns a unique I
 
 
 * Citation 4
-So now that we've finished creating our login route we want to actually make another route to validate JWTs and this route is going to be used by our API Gateway to validate JWTs sync within requests from the client to both upload and receive or download MP3s or to upload videos and download the MP3 version of those videos and you'll see what I mean by that later on in the tutorial when we actually start to implement that 
+So now that we've finished creating our login route we want to actually make another route to validate JWTs and this route is going to be used by our API Gateway to validate JWTs sync within requests from the client to both upload and receive or download MP3s or to upload videos and download the MP3 version of those videos and you'll see what I mean by that later on in the tutorial when we actually start to implement that.
+
+
+* Citation 5
+
+Step 1: Understanding the Authorization Header Type
+The Authorization header in HTTP requests specifies the type of credential being sent. If the type is Basic, the server expects a base64-encoded string containing a username and password separated by a colon. On the other hand, if the type is Bearer, the server assumes the credential is a bearer token, which grants access to associated resources simply by possessing the token.
+
+Step 2: Handling Bearer Tokens in Code
+In the validation endpoint, the code assumes that the Authorization header contains a bearer token. For simplicity, the example does not validate the type prefix (e.g., "Bearer") during processing. However, in a production environment, it is recommended to validate the type to ensure that the header explicitly follows the expected authentication scheme, which prevents errors and enhances security.
+
+Step 3: Expected Bearer Token Format
+The Authorization header for bearer tokens follows this format:
+Authorization: Bearer <JWT>
+It consists of the word “Bearer,” followed by a space, and then the token itself. This format must be parsed correctly so the JWT can be extracted and validated.
+
+Step 4: Splitting and Extracting the Token
+To extract the token, the string in the Authorization header is split based on the space. The first part contains the word "Bearer," while the second part contains the actual JWT. The token is retrieved from the second position (index 1) of the resulting array, ensuring that only the encoded JWT is passed for further processing.
+
+Step 5: Decoding and Validating the JWT
+Once the token is extracted, it is decoded using a method like JWT.decode(). The decoding process requires the token itself and the secret key that was used to sign it originally. This secret ensures the token’s integrity, allowing the server to validate that it has not been tampered with. If the decoding succeeds, the token is considered valid, and the user can access the associated resources; otherwise, the request is rejected.
+
+
+* Citation 6
+
+Step 1: Preparing for Deployment
+The first step in deploying services is to set up the infrastructure needed for deployment. Since all services will run inside a Kubernetes cluster, the process begins by containerizing each service using Docker. Containerization ensures that the application and its dependencies are bundled together, making them portable and easy to deploy across different environments.
+
+Step 2: Creating Docker Images
+Each service requires a Dockerfile that defines how the Docker image is built. The Dockerfile specifies a base image (such as Python or Flask) and includes instructions to copy the application code, install dependencies, and configure the runtime environment. Once the Docker images are built, they are pushed to a container repository (such as Docker Hub or AWS ECR), making them accessible for deployment.

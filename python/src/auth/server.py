@@ -54,6 +54,19 @@ def validate():
     if not encoded_jwt:
         return "Missing Credentials", 401
 
+    ''' Citation 5 '''
+
+    encoded_jwt = encoded_jwt.split(" ")[1]
+
+    try:
+        decoded = jwt.decode(
+            encoded_jwt, os.environ.get("JWT_SECRET"), algorithms=["HS256"]
+        )
+    except:
+        return "not authorized", 403
+
+    return decoded, 200
+
 
 ''' Citation 1 '''
 
@@ -62,8 +75,8 @@ def createJWT(username, secret, authx): # authx is to check for admin priviledge
         payload={
             "username": username,
             "exp": datetime.datetime.now(tz=datetime.timezone.utc) 
-            + datetime.timedelta(days=1) # Token will expire after 1 day from issued date
-            "iat": datetime.datetime.utcnow() # Token issued date and time
+            + datetime.timedelta(days=1), # Token will expire after 1 day from issued date
+            "iat": datetime.datetime.utcnow(), # Token issued date and time
             "admin": authx
         },
         key=secret,
