@@ -47,14 +47,12 @@ def login():
 
 ''' Citation 4 '''
 
-@server.route("/validate", method=["POST"])
+@server.route("/validate", methods=["POST"])
 def validate():
     encoded_jwt = request.headers["Authorization"]
 
     if not encoded_jwt:
-        return "Missing Credentials", 401
-
-    ''' Citation 5 '''
+        return "missing credentials", 401
 
     encoded_jwt = encoded_jwt.split(" ")[1]
 

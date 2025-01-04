@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-configmap
+data:
+  MYSQL_HOST: host.minikube.internal # Since cluster is in isolated network, to access our "localhost", we need to reference our system's network which is hosting the cluster as well as our MySQL Server.
+  MYSQL_USER: auth_user
+  MYSQL_DB: auth
+  MYSQL_PORT: "3306"
