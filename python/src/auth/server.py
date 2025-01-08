@@ -75,7 +75,7 @@ def createJWT(username, secret, authx): # authx is to check for admin priviledge
             "exp": datetime.datetime.now(tz=datetime.timezone.utc) 
             + datetime.timedelta(days=1), # Token will expire after 1 day from issued date
             "iat": datetime.datetime.utcnow(), # Token issued date and time
-            "admin": authx
+            "admin": authx # Admin Priviledges (True/False)
         },
         key=secret,
         algorithm="HS256",
