@@ -1,0 +1,23 @@
+# This will allow traffic to access our gateway endpoint
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+  annotations: # nginx ingress
+    nginx.ingress.kubernetes.io/proxy-body-size: "0" # This means file of any size can be uploaded for conversion
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+spec:
+  rules:
+      # we are going to make below route in such a way so that request to this host on our local machine gets redirected to our localhost. We are going to map this hostname to localhost on our local machine. 
+      # And then, we are going to tunnel requests to our local host to minikube.
+    - host: mp3converter.com # route the request to the host "mp3converter.com" to our "Gateway" service
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  8080

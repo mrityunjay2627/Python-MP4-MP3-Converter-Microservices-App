@@ -1,0 +1,16 @@
+# For availabilty within our cluster (ClusterIP)
+# Cannot be accessed fromoutside of the cluster
+# We will create another configuration called an "Ingress.yaml" to enable gateway API to be accessible outside ouf our cluster so that user/client can interact with it.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+spec:
+  selector:
+    app: gateway
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
