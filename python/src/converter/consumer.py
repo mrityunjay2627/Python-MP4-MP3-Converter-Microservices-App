@@ -2,7 +2,7 @@ import pika, sys, os, time
 import pika.connection
 from pymongo import MongoClient
 import gridfs
-from converter import to_mp3
+from convert import to_mp3
 
 def main():
     client = MongoClient("host.minikube.internal", 27017) # Since cluster is in isolated network, to access our "localhost", we need to reference our system's network which is hosting the cluster as well as our MySQL Server.
