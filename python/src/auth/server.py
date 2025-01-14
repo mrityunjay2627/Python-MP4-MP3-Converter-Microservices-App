@@ -1,4 +1,5 @@
-import jwt, datetime, os # auth services
+import jwt
+import datetime, os # auth services
 from flask import Flask, request # server
 from flask_mysqldb import MySQL # sql database connection
 
@@ -14,7 +15,7 @@ server.config["MYSQL_HOST"] = os.environ.get("MYSQL_HOST")
 server.config["MYSQL_USER"] = os.environ.get("MYSQL_USER")
 server.config["MYSQL_PASSWORD"] = os.environ.get("MYSQL_PASSWORD")
 server.config["MYSQL_DB"] = os.environ.get("MYSQL_DB")
-server.config["MYSQL_PORT"] = os.environ.get("MYSQL_PORT")
+server.config["MYSQL_PORT"] = int(os.environ.get("MYSQL_PORT"))
 
 
 ''' Citation 2 '''
@@ -29,7 +30,7 @@ def login():
     # check db for username and password
     cursor = mysql.connection.cursor()
     res = cursor.execute(
-        "SELECT email, password fro user where email=%s", (auth.username,)
+        "SELECT email, password FROM user WHERE email=%s", (auth.username,)
     ) # email is being used as "username" and we will pass it as a tuple.
 
     if res > 0:
