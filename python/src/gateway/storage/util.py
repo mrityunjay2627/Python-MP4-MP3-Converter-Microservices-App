@@ -6,7 +6,7 @@ def upload(f, fs, channel, access):
     try:
         fid = fs.put(f) # Put file in mongodb. Return file id (fid)
     except Exception as err:
-        return "internal server error", 500
+        return "Mongodb internal server error", 500
     
     message = { # Python Object (Dictionary here)
         "video_file_id": str(fid),
@@ -25,4 +25,4 @@ def upload(f, fs, channel, access):
         )
     except:
         fs.delete(fid) # Since there is no message to downstreams service, this file will get stale in our database and never get processed. So, delete it.
-        return "internal server error", 500
+        return "Message not published to rabbitmq - internal server error", 500
