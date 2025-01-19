@@ -4,10 +4,11 @@
 FROM python:3.10-slim-bullseye
 
 # Install system dependencies
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends --no-install-suggests \
-    build-essential ffmpeg\
-    libmariadb-dev gcc python3-dev musl-dev \
+    build-essential ffmpeg \
+    libmariadb-dev gcc python3-dev musl-dev default-libmysqlclient-dev pkg-config \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
