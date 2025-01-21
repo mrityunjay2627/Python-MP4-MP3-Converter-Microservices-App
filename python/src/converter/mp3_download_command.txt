@@ -1,0 +1,1 @@
+mongofiles /uri:mongodb://localhost:27017 /db:mp3s /local:test.mp3 get_id '{ \"$oid\": \"678ca20494c4318df094e1a4\" }'
